@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Controle de Inventário - Shopee</title>
+    <title>Dashboard de Controlo de Inventário - Shopee</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -26,7 +26,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800">
 
-    <!-- Tela de Carregamento -->
+    <!-- Ecrã de Carregamento -->
     <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50 transition-opacity duration-300">
         <div id="loader" class="w-16 h-16 border-4 border-gray-200 border-solid rounded-full animate-spin"></div>
         <p id="loading-text" class="mt-4 text-lg font-semibold text-gray-700">A carregar dados da planilha...</p>
@@ -183,9 +183,37 @@
             }
         }
         
-        function renderVisaoGeral(spxData, avariasData, lostData) { /* ...código mantido... */ }
-        function renderAnaliseAvarias(avariasData) { /* ...código mantido... */ }
-        function renderNaoCoube(naoCoubeData) { /* ...código mantido... */ }
+        function renderVisaoGeral(spxData, avariasData, lostData) {
+            const page = document.getElementById('page-visao-geral');
+            page.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Total de Pedidos</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(spxData || []).length.toLocaleString('pt-BR')}</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos em Rota</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(spxData || []).filter(d => getRowValue(d, ['Status']) === 'Delivering').length.toLocaleString('pt-BR')}</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Avarias Registadas</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(avariasData || []).length.toLocaleString('pt-BR')}</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos Perdidos (Lost)</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(lostData || []).length.toLocaleString('pt-BR')}</p></div></div><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Volume de Pedidos por Status</h3><div id="chart-status-pedidos" class="space-y-4"></div></div>`;
+            const statusCounts = (spxData || []).reduce((acc, row) => { const status = getRowValue(row, ['Status']) || 'Indefinido'; acc[status] = (acc[status] || 0) + 1; return acc; }, {});
+            const chartContainer = document.getElementById('chart-status-pedidos');
+            const total = spxData.length;
+            for (const [status, count] of Object.entries(statusCounts)) { const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0; chartContainer.innerHTML += `<div class="flex items-center"><span class="w-28 text-sm text-gray-600">${status}</span><div class="w-full bg-gray-200 rounded-full h-4"><div class="shopee-orange h-4 rounded-full" style="width: ${percentage}%"></div></div><span class="w-16 text-right text-sm font-medium">${count.toLocaleString('pt-BR')}</span></div>`; }
+        }
+
+        function renderAnaliseAvarias(avariasData) {
+            const page = document.getElementById('page-analise-avarias');
+            page.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Avarias por Tipo</h3><div id="chart-avarias-tipo" class="space-y-4"></div></div><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Avarias por Turno</h3><div id="chart-avarias-turno" class="flex justify-around text-center pt-4"></div></div></div><div class="mt-6 bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Registos de Avaria</h3><div class="overflow-x-auto max-h-96"><table class="w-full text-sm text-left"><thead class="bg-gray-100 text-gray-600 sticky top-0"><tr><th class="p-3">Data</th><th class="p-3">Order ID</th><th class="p-3">Líder</th><th class="p-3">Tipo Avaria</th></tr></thead><tbody id="table-avarias-body"></tbody></table></div></div>`;
+            const createBarHTML = (label, count, total) => { const percentage = total > 0 ? ((count/total) * 100) : 0; return `<div class="flex items-center"><span class="w-40 text-sm text-gray-600 truncate" title="${label}">${label}</span><div class="w-full bg-gray-200 h-4 rounded-full"><div class="shopee-orange h-4 rounded-full" style="width: ${percentage}%"></div></div><span class="w-16 text-right text-sm font-medium">${count}</span></div>`; };
+            const porTipo = (avariasData || []).reduce((acc, row) => { const tipo = getRowValue(row, ['Tipo Avaria']); acc[tipo] = (acc[tipo] || 0) + 1; return acc; }, {});
+            document.getElementById('chart-avarias-tipo').innerHTML = Object.entries(porTipo).map(([label, count]) => createBarHTML(label || 'N/A', count, avariasData.length)).join('');
+            const porTurno = (avariasData || []).reduce((acc, row) => { const turno = getRowValue(row, ['Turno']); acc[turno] = (acc[turno] || 0) + 1; return acc; }, {});
+            document.getElementById('chart-avarias-turno').innerHTML = Object.entries(porTurno).map(([label, count]) => `<div><p class="text-2xl font-bold">${count}</p><p class="text-sm text-gray-500">${label || 'N/A'}</p></div>`).join('');
+            const tableBody = document.getElementById('table-avarias-body');
+            (avariasData || []).forEach(row => { tableBody.innerHTML += `<tr class="border-b"><td class="p-3">${getRowValue(row, ['Data'])}</td><td class="p-3 font-medium">${getRowValue(row, ['BR (Order ID)'])}</td><td class="p-3">${getRowValue(row, ['Líder Responsável'])}</td><td class="p-3">${getRowValue(row, ['Tipo Avaria'])}</td></tr>`; });
+        }
+        
+        function renderNaoCoube(naoCoubeData) {
+             const page = document.getElementById('page-nao-coube');
+             page.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">"Não Coube" no Período</h3><p class="text-3xl font-bold text-gray-800 mt-2" id="kpi-naocoube-periodo">0</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos Únicos Repetidos</h3><p class="text-3xl font-bold text-gray-800 mt-2" id="kpi-naocoube-repetidos">0</p></div></div><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Lista de Pedidos com Múltiplos Registos "Não Coube"</h3><div class="overflow-x-auto max-h-96"><table class="w-full text-sm text-left"><thead class="bg-gray-100 text-gray-600 sticky top-0"><tr><th class="p-3">Order ID</th><th class="p-3">Qtd. de Vezes</th><th class="p-3">Último Recebedor</th></tr></thead><tbody id="table-naocoube-body"></tbody></table></div></div>`;
+             const repetidos = (naoCoubeData || []).reduce((acc, row) => { const orderId = getRowValue(row, ['Order_Id', 'Order ID']); if (orderId) { if (!acc[orderId]) acc[orderId] = { count: 0, recebedor: '' }; acc[orderId].count++; acc[orderId].recebedor = getRowValue(row, ['Recebedor']); } return acc; }, {});
+             const repetidosFiltrados = Object.entries(repetidos).filter(([, data]) => data.count > 1);
+             document.getElementById('kpi-naocoube-periodo').textContent = naoCoubeData.length.toLocaleString('pt-BR');
+             document.getElementById('kpi-naocoube-repetidos').textContent = repetidosFiltrados.length.toLocaleString('pt-BR');
+             const tableBody = document.getElementById('table-naocoube-body');
+             repetidosFiltrados.sort((a,b) => b[1].count - a[1].count).forEach(([orderId, data]) => { tableBody.innerHTML += `<tr class="border-b"><td class="p-3 font-medium">${orderId}</td><td class="p-3"><span class="bg-red-100 text-red-800 font-bold px-2 py-1 rounded">${data.count}</span></td><td class="p-3">${data.recebedor || 'N/A'}</td></tr>`; });
+        }
         
         function renderLooping(loopingData) {
             const page = document.getElementById('page-looping');
@@ -246,42 +274,8 @@
         }
 
         // --- INICIALIZAÇÃO E EVENTOS ---
-        document.addEventListener('DOMContentLoaded', async () => { /* ...código mantido... */ });
-        document.getElementById('date-filters').addEventListener('click', (e) => { /* ...código mantido... */ });
-
-        // Cole aqui o bloco de código completo das funções de renderização que foram omitidas
-        function renderVisaoGeral(spxData, avariasData, lostData) {
-            const page = document.getElementById('page-visao-geral');
-            page.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Total de Pedidos</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(spxData || []).length.toLocaleString('pt-BR')}</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos em Rota</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(spxData || []).filter(d => getRowValue(d, ['Status']) === 'Delivering').length.toLocaleString('pt-BR')}</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Avarias Registadas</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(avariasData || []).length.toLocaleString('pt-BR')}</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos Perdidos (Lost)</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(lostData || []).length.toLocaleString('pt-BR')}</p></div></div><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Volume de Pedidos por Status</h3><div id="chart-status-pedidos" class="space-y-4"></div></div>`;
-            const statusCounts = (spxData || []).reduce((acc, row) => { const status = getRowValue(row, ['Status']) || 'Indefinido'; acc[status] = (acc[status] || 0) + 1; return acc; }, {});
-            const chartContainer = document.getElementById('chart-status-pedidos');
-            const total = spxData.length;
-            for (const [status, count] of Object.entries(statusCounts)) { const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0; chartContainer.innerHTML += `<div class="flex items-center"><span class="w-28 text-sm text-gray-600">${status}</span><div class="w-full bg-gray-200 rounded-full h-4"><div class="shopee-orange h-4 rounded-full" style="width: ${percentage}%"></div></div><span class="w-16 text-right text-sm font-medium">${count.toLocaleString('pt-BR')}</span></div>`; }
-        }
-        function renderAnaliseAvarias(avariasData) {
-            const page = document.getElementById('page-analise-avarias');
-            page.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Avarias por Tipo</h3><div id="chart-avarias-tipo" class="space-y-4"></div></div><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Avarias por Turno</h3><div id="chart-avarias-turno" class="flex justify-around text-center pt-4"></div></div></div><div class="mt-6 bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Registos de Avaria</h3><div class="overflow-x-auto max-h-96"><table class="w-full text-sm text-left"><thead class="bg-gray-100 text-gray-600 sticky top-0"><tr><th class="p-3">Data</th><th class="p-3">Order ID</th><th class="p-3">Líder</th><th class="p-3">Tipo Avaria</th></tr></thead><tbody id="table-avarias-body"></tbody></table></div></div>`;
-            const createBarHTML = (label, count, total) => { const percentage = total > 0 ? ((count/total) * 100) : 0; return `<div class="flex items-center"><span class="w-40 text-sm text-gray-600 truncate" title="${label}">${label}</span><div class="w-full bg-gray-200 h-4 rounded-full"><div class="shopee-orange h-4 rounded-full" style="width: ${percentage}%"></div></div><span class="w-16 text-right text-sm font-medium">${count}</span></div>`; };
-            const porTipo = (avariasData || []).reduce((acc, row) => { const tipo = getRowValue(row, ['Tipo Avaria']); acc[tipo] = (acc[tipo] || 0) + 1; return acc; }, {});
-            document.getElementById('chart-avarias-tipo').innerHTML = Object.entries(porTipo).map(([label, count]) => createBarHTML(label || 'N/A', count, avariasData.length)).join('');
-            const porTurno = (avariasData || []).reduce((acc, row) => { const turno = getRowValue(row, ['Turno']); acc[turno] = (acc[turno] || 0) + 1; return acc; }, {});
-            document.getElementById('chart-avarias-turno').innerHTML = Object.entries(porTurno).map(([label, count]) => `<div><p class="text-2xl font-bold">${count}</p><p class="text-sm text-gray-500">${label || 'N/A'}</p></div>`).join('');
-            const tableBody = document.getElementById('table-avarias-body');
-            (avariasData || []).forEach(row => { tableBody.innerHTML += `<tr class="border-b"><td class="p-3">${getRowValue(row, ['Data'])}</td><td class="p-3 font-medium">${getRowValue(row, ['BR (Order ID)'])}</td><td class="p-3">${getRowValue(row, ['Líder Responsável'])}</td><td class="p-3">${getRowValue(row, ['Tipo Avaria'])}</td></tr>`; });
-        }
-        function renderNaoCoube(naoCoubeData) {
-             const page = document.getElementById('page-nao-coube');
-             page.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">"Não Coube" no Período</h3><p class="text-3xl font-bold text-gray-800 mt-2" id="kpi-naocoube-periodo">0</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos Únicos Repetidos</h3><p class="text-3xl font-bold text-gray-800 mt-2" id="kpi-naocoube-repetidos">0</p></div></div><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Lista de Pedidos com Múltiplos Registos "Não Coube"</h3><div class="overflow-x-auto max-h-96"><table class="w-full text-sm text-left"><thead class="bg-gray-100 text-gray-600 sticky top-0"><tr><th class="p-3">Order ID</th><th class="p-3">Qtd. de Vezes</th><th class="p-3">Último Recebedor</th></tr></thead><tbody id="table-naocoube-body"></tbody></table></div></div>`;
-             const repetidos = (naoCoubeData || []).reduce((acc, row) => { const orderId = getRowValue(row, ['Order_Id', 'Order ID']); if (orderId) { if (!acc[orderId]) acc[orderId] = { count: 0, recebedor: '' }; acc[orderId].count++; acc[orderId].recebedor = getRowValue(row, ['Recebedor']); } return acc; }, {});
-             const repetidosFiltrados = Object.entries(repetidos).filter(([, data]) => data.count > 1);
-             document.getElementById('kpi-naocoube-periodo').textContent = naoCoubeData.length.toLocaleString('pt-BR');
-             document.getElementById('kpi-naocoube-repetidos').textContent = repetidosFiltrados.length.toLocaleString('pt-BR');
-             const tableBody = document.getElementById('table-naocoube-body');
-             repetidosFiltrados.sort((a,b) => b[1].count - a[1].count).forEach(([orderId, data]) => { tableBody.innerHTML += `<tr class="border-b"><td class="p-3 font-medium">${orderId}</td><td class="p-3"><span class="bg-red-100 text-red-800 font-bold px-2 py-1 rounded">${data.count}</span></td><td class="p-3">${data.recebedor || 'N/A'}</td></tr>`; });
-        }
         document.addEventListener('DOMContentLoaded', async () => {
             const loadingError = document.getElementById('loading-error'); const loadingText = document.getElementById('loading-text'); const loader = document.getElementById('loader');
-            if (Object.values(SHEET_URLS).some(url => url.includes('COLE_A_URL'))) { loadingText.style.display = 'none'; loader.style.display = 'none'; loadingError.innerHTML = '<b>Erro de Configuração:</b><br>Por favor, cole os URLs de CSV publicados da sua planilha na variável `SHEET_URLS` dentro do código deste ficheiro HTML.'; loadingError.classList.remove('hidden'); return; }
             try {
                 const dataPromises = Object.entries(SHEET_URLS).map(async ([key, url]) => { const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`; const response = await fetch(proxyUrl); if (!response.ok) throw new Error(`Falha ao buscar a aba '${key}' (status: ${response.status}). Verifique se o link está correto e público.`); const csvText = await response.text(); return [key, parseCSV(csvText)]; });
                 const allDataArray = await Promise.all(dataPromises);
