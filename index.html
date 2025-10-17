@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF--8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard de Controle de Inventário - Shopee</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -27,30 +27,32 @@
 <body class="bg-gray-50 text-gray-800">
 
     <!-- Tela de Carregamento -->
-    <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50">
+    <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-90 flex flex-col items-center justify-center z-50 transition-opacity duration-300">
         <div id="loader" class="w-16 h-16 border-4 border-gray-200 border-solid rounded-full animate-spin"></div>
-        <p class="mt-4 text-lg font-semibold text-gray-700">Carregando dados da planilha...</p>
-        <p id="loading-error" class="mt-2 text-red-500 hidden text-center max-w-md"></p>
+        <p id="loading-text" class="mt-4 text-lg font-semibold text-gray-700">A carregar dados da planilha...</p>
+        <p id="loading-error" class="mt-2 text-red-600 hidden text-center max-w-lg font-medium p-4 bg-red-50 rounded-lg border border-red-200"></p>
     </div>
 
     <div class="flex h-screen">
-        <!-- Sidebar -->
+        <!-- Barra Lateral -->
         <aside class="w-64 bg-white shadow-md flex-shrink-0">
-            <div class="p-6 flex items-center justify-center border-b"><img src="https://i.imgur.com/9QWcgRj.png" alt="Shopee Logo" class="h-10"></div>
+            <div class="p-6 flex items-center justify-center border-b"><img src="https://i.imgur.com/9QWcgRj.png" alt="Logótipo da Shopee" class="h-10"></div>
             <nav class="mt-6">
                 <a href="#" id="nav-visao-geral" class="sidebar-item active flex items-center py-3 px-6 text-gray-600" onclick="showPage('visao-geral')"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 shopee-orange-text" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg><span>Visão Geral</span></a>
                 <a href="#" id="nav-analise-avarias" class="sidebar-item flex items-center py-3 px-6 text-gray-600" onclick="showPage('analise-avarias')"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg><span>Análise de Avarias</span></a>
                 <a href="#" id="nav-nao-coube" class="sidebar-item flex items-center py-3 px-6 text-gray-600" onclick="showPage('nao-coube')"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 18H5a2 2 0 01-2-2V8a2 2 0 012-2h5m5 4v6m0-6l-3-3m3 3l3-3" /></svg><span>Não Coube</span></a>
+                <a href="#" id="nav-looping" class="sidebar-item flex items-center py-3 px-6 text-gray-600" onclick="showPage('looping')"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M4 4l16 16" /></svg><span>Looping</span></a>
+                <a href="#" id="nav-realocados" class="sidebar-item flex items-center py-3 px-6 text-gray-600" onclick="showPage('realocados')"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M13 17H6v-2l5-2v4H3V6h13l-4 4m-1-4h4v6h-4V6z"></path></svg><span>Realocados</span></a>
             </nav>
         </aside>
 
-        <!-- Main Content (conteúdo principal) -->
+        <!-- Conteúdo Principal -->
         <main class="flex-1 overflow-y-auto">
             <div class="p-8">
                 <header class="mb-6 flex flex-wrap justify-between items-center gap-4">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-800">Dashboard de Controle de Inventário</h1>
-                        <p class="text-gray-500 mt-1">Atualizado a cada 5 minutos. Última busca: <span id="last-updated"></span></p>
+                        <h1 class="text-3xl font-bold text-gray-800">Dashboard de Controlo de Inventário</h1>
+                        <p class="text-gray-500 mt-1">Atualizado a cada 5 minutos. Última busca: <span id="last-updated">--:--:--</span></p>
                     </div>
                     <div id="date-filters" class="flex items-center space-x-2">
                          <button class="date-filter-btn bg-white text-gray-700 px-4 py-2 rounded-lg shadow-sm border hover:bg-gray-100 transition-colors" data-period="all">Tudo</button>
@@ -60,181 +62,238 @@
                     </div>
                 </header>
 
-                <!-- As páginas serão renderizadas aqui -->
-                <div id="page-visao-geral">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Total de Pedidos</h3><p id="kpi-total-pedidos" class="text-3xl font-bold text-gray-800 mt-2">0</p></div>
-                        <div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos em Rota</h3><p id="kpi-em-rota" class="text-3xl font-bold text-gray-800 mt-2">0</p></div>
-                        <div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Avarias Registradas</h3><p id="kpi-avarias" class="text-3xl font-bold text-gray-800 mt-2">0</p></div>
-                        <div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos Perdidos (Lost)</h3><p id="kpi-lost" class="text-3xl font-bold text-gray-800 mt-2">0</p></div>
-                    </div>
-                     <div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Volume de Pedidos por Status</h3><div id="chart-status-pedidos" class="space-y-4"></div></div>
-                </div>
-
-                <div id="page-analise-avarias" class="hidden">
-                    <!-- Conteúdo preenchido por JavaScript -->
-                </div>
-
-                <div id="page-nao-coube" class="hidden">
-                     <!-- Conteúdo preenchido por JavaScript -->
-                </div>
+                <div id="page-visao-geral"><!-- O conteúdo será injetado aqui --></div>
+                <div id="page-analise-avarias" class="hidden"><!-- O conteúdo será injetado aqui --></div>
+                <div id="page-nao-coube" class="hidden"><!-- O conteúdo será injetado aqui --></div>
+                <div id="page-looping" class="hidden"><!-- O conteúdo será injetado aqui --></div>
+                <div id="page-realocados" class="hidden"><!-- O conteúdo será injetado aqui --></div>
             </div>
         </main>
     </div>
 
     <script>
         // --- CONFIGURAÇÃO ---
-        // COLE AQUI AS URLs PÚBLICAS DE CSV DA SUA PLANILHA
         const SHEET_URLS = {
-            spx_Looping': 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSS3_ZEZVGeQLsyoqZofdqGnNH9AVtwA6ZmPgpxh6JbWI8zYr-LvOTM2bZ9Qc5iozcjtXmrm_N7hGYq/pub?gid=205074627&single=true&output=csv',
+            spx: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSS3_ZEZVGeQLsyoqZofdqGnNH9AVtwA6ZmPgpxh6JbWI8zYr-LvOTM2bZ9Qc5iozcjtXmrm_N7hGYq/pub?gid=205074627&single=true&output=csv',
             avarias: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSS3_ZEZVGeQLsyoqZofdqGnNH9AVtwA6ZmPgpxh6JbWI8zYr-LvOTM2bZ9Qc5iozcjtXmrm_N7hGYq/pub?gid=227777912&single=true&output=csv',
             naoCoube: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSS3_ZEZVGeQLsyoqZofdqGnNH9AVtwA6ZmPgpxh6JbWI8zYr-LvOTM2bZ9Qc5iozcjtXmrm_N7hGYq/pub?gid=39642381&single=true&output=csv',
-            lost: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSS3_ZEZVGeQLsyoqZofdqGnNH9AVtwA6ZmPgpxh6JbWI8zYr-LvOTM2bZ9Qc5iozcjtXmrm_N7hGYq/pub?gid=1070430125&single=true&output=csv'
-            looping: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSS3_ZEZVGeQLsyoqZofdqGnNH9AVtwA6ZmPgpxh6JbWI8zYr-LvOTM2bZ9Qc5iozcjtXmrm_N7hGYq/pub?gid=1464396391&single=true&output=csv'
+            lost: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSS3_ZEZVGeQLsyoqZofdqGnNH9AVtwA6ZmPgpxh6JbWI8zYr-LvOTM2bZ9Qc5iozcjtXmrm_N7hGYq/pub?gid=1070430125&single=true&output=csv',
+            looping: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSS3_ZEZVGeQLsyoqZofdqGnNH9AVtwA6ZmPgpxh6JbWI8zYr-LvOTM2bZ9Qc5iozcjtXmrm_N7hGYq/pub?gid=1464396391&single=true&output=csv',
             realocados: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSS3_ZEZVGeQLsyoqZofdqGnNH9AVtwA6ZmPgpxh6JbWI8zYr-LvOTM2bZ9Qc5iozcjtXmrm_N7hGYq/pub?gid=300854873&single=true&output=csv'
-            // Adicione mais abas se precisar, ex: onHold: 'URL_AQUI'
         };
 
+        // --- VARIÁVEIS GLOBAIS ---
         let originalData = {};
         let currentPeriod = 'today';
+        const pages = ['visao-geral', 'analise-avarias', 'nao-coube', 'looping', 'realocados'];
+        
+        // --- FUNÇÕES DE UI ---
+        const navItems = document.querySelectorAll('.sidebar-item');
+        function showPage(pageId) {
+            pages.forEach(id => document.getElementById(`page-${id}`).classList.add('hidden'));
+            navItems.forEach(item => { item.classList.remove('active'); item.querySelector('svg')?.classList.remove('text-white'); item.querySelector('svg')?.classList.add('text-gray-500'); });
+            
+            const activePage = document.getElementById(`page-${pageId}`);
+            activePage.classList.remove('hidden');
+            
+            const activeNavItem = document.getElementById(`nav-${pageId}`);
+            activeNavItem.classList.add('active');
+            activeNavItem.querySelector('svg')?.classList.add('text-white');
+            activeNavItem.querySelector('svg')?.classList.remove('text-gray-500', 'shopee-orange-text');
+            
+            renderDashboard();
+        }
 
-        function showPage(pageId) { /* ... Lógica de navegação ... */ }
-
-        /**
-         * Converte texto CSV em um array de objetos JSON.
-         * @param {string} csvText O texto CSV a ser convertido.
-         * @returns {Array<Object>}
-         */
+        // --- FUNÇÕES DE PROCESSAMENTO DE DADOS ---
         function parseCSV(csvText) {
             const lines = csvText.trim().split(/\r?\n/);
             if (lines.length < 2) return [];
             const headers = lines.shift().split(',').map(h => h.trim());
             return lines.map(line => {
-                // Regex para separar por vírgulas, mas ignorar vírgulas dentro de aspas
-                const values = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+                const values = line.split(',');
                 const row = {};
-                for (let i = 0; i < headers.length; i++) {
-                    const header = headers[i];
-                    let value = (values[i] || '').trim();
-                    // Remove aspas do início e fim se existirem
-                    if (value.startsWith('"') && value.endsWith('"')) {
-                        value = value.slice(1, -1);
-                    }
-                    row[header] = value;
-                }
+                headers.forEach((header, index) => {
+                    row[header] = values[index] ? values[index].trim() : '';
+                });
                 return row;
             });
         }
-
-        function parseDate(dateString) { /* ... Lógica de data ... */ }
-        function filterDataByPeriod(data, dateColumn) { /* ... Lógica de filtro ... */ }
-
-        // --- FUNÇÕES DE ATUALIZAÇÃO DO DASHBOARD (renderDashboard, updateVisaoGeral, etc.) ---
-        // Elas são idênticas à versão do Apps Script, então foram omitidas aqui para economizar espaço
-        // O código completo está abaixo.
-
-        // --- INICIALIZAÇÃO ---
-        document.addEventListener('DOMContentLoaded', async () => {
-            const loadingError = document.getElementById('loading-error');
-            
-            // Verifica se as URLs foram preenchidas
-            if (Object.values(SHEET_URLS).some(url => url.includes('COLE_A_URL'))) {
-                loadingError.innerHTML = '<b>Erro de Configuração:</b><br>Por favor, cole as URLs de CSV publicadas da sua planilha na variável `SHEET_URLS` dentro do código deste arquivo HTML.';
-                loadingError.classList.remove('hidden');
-                document.getElementById('loader').style.display = 'none';
-                return;
-            }
-
-            try {
-                // Busca os dados de todas as URLs em paralelo
-                const responses = await Promise.all(
-                    Object.entries(SHEET_URLS).map(([key, url]) => 
-                        fetch(url).then(res => {
-                            if (!res.ok) throw new Error(`Falha ao buscar a aba '${key}'`);
-                            return res.text();
-                        })
-                    )
-                );
-                
-                // Converte cada CSV em JSON
-                const dataKeys = Object.keys(SHEET_URLS);
-                responses.forEach((csvText, index) => {
-                    const key = dataKeys[index];
-                    originalData[key] = parseCSV(csvText);
-                });
-
-                document.getElementById('last-updated').textContent = new Date().toLocaleTimeString('pt-BR');
-                document.getElementById('loading-overlay').style.display = 'none';
-                
-                renderDashboard();
-
-            } catch (error) {
-                 loadingError.textContent = `Falha ao carregar dados: ${error.message}. Verifique os links e se as abas foram publicadas corretamente.`;
-                 loadingError.classList.remove('hidden');
-            }
-        });
         
-        document.getElementById('date-filters').addEventListener('click', (e) => { /* ... Lógica dos botões de data ... */ });
-
-        // --- O CÓDIGO COMPLETO DAS FUNÇÕES DE RENDERIZAÇÃO ---
-        // (Copie e cole este bloco inteiro no seu script)
-        function renderDashboard() {
-            if (!originalData.spx) return;
-            const filteredSpx = filterDataByPeriod(originalData.spx, 'Received Time');
-            const filteredAvarias = filterDataByPeriod(originalData.avarias, 'Data');
-            const filteredLost = filterDataByPeriod(originalData.lost, 'Inventory Date');
-            const filteredNaoCoube = filterDataByPeriod(originalData.naoCoube, 'Data');
-            updateVisaoGeral(filteredSpx, filteredAvarias, filteredLost);
-            renderAnaliseAvarias(filteredAvarias);
-            renderNaoCoube(filteredNaoCoube);
+        function parseDate(dateString) {
+            if (!dateString || typeof dateString !== 'string') return null;
+            const s = dateString.toLowerCase().trim();
+            const monthMap = { jan:0, fev:1, mar:2, abr:3, mai:4, jun:5, jul:6, ago:7, set:8, out:9, nov:10, dez:11 };
+            let match = s.match(/(\d{1,2})\/([a-z]{3})\.?/);
+            if (match) return new Date(new Date().getFullYear(), monthMap[match[2]], parseInt(match[1], 10));
+            match = s.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
+            if (match) return new Date(match[3], match[2] - 1, match[1]);
+            const date = new Date(s);
+            if (!isNaN(date.getTime())) return date;
+            return null;
         }
-        function updateVisaoGeral(spxData, avariasData, lostData) {
-            document.getElementById('kpi-total-pedidos').textContent = spxData.length.toLocaleString('pt-BR');
-            document.getElementById('kpi-em-rota').textContent = spxData.filter(d => d.Status === 'Delivering').length.toLocaleString('pt-BR');
-            document.getElementById('kpi-avarias').textContent = avariasData.length.toLocaleString('pt-BR');
-            document.getElementById('kpi-lost').textContent = lostData.length.toLocaleString('pt-BR');
-            const statusCounts = spxData.reduce((acc, row) => { const status = row.Status || 'Indefinido'; acc[status] = (acc[status] || 0) + 1; return acc; }, {});
-            const chartContainer = document.getElementById('chart-status-pedidos');
-            chartContainer.innerHTML = ''; const total = spxData.length;
-            for (const [status, count] of Object.entries(statusCounts)) {
-                const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
-                chartContainer.innerHTML += `<div class="flex items-center"><span class="w-28 text-sm text-gray-600">${status}</span><div class="w-full bg-gray-200 rounded-full h-4"><div class="shopee-orange h-4 rounded-full" style="width: ${percentage}%"></div></div><span class="w-16 text-right text-sm font-medium">${count.toLocaleString('pt-BR')}</span></div>`;
+
+        function getRowValue(row, possibleHeaders) {
+            for (const header of possibleHeaders) {
+                const actualHeader = Object.keys(row).find(key => key.toLowerCase().trim() === header.toLowerCase());
+                if (actualHeader && row[actualHeader]) return row[actualHeader];
             }
+            return '';
+        }
+
+        function filterDataByPeriod(data, dateColumnAliases) {
+            if (!data) return [];
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1));
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            return data.filter(row => {
+                const dateStr = getRowValue(row, dateColumnAliases);
+                const rowDate = parseDate(dateStr);
+                if (!rowDate || isNaN(rowDate.getTime())) return false;
+                const rowDay = new Date(rowDate.getFullYear(), rowDate.getMonth(), rowDate.getDate());
+                switch (currentPeriod) {
+                    case 'today': return rowDay.getTime() === today.getTime();
+                    case 'week': return rowDay >= weekStart;
+                    case 'month': return rowDay >= monthStart;
+                    default: return true;
+                }
+            });
+        }
+
+        // --- FUNÇÕES DE RENDERIZAÇÃO ---
+        function renderDashboard() {
+            if (Object.keys(originalData).length === 0) return;
+            const activePageId = pages.find(id => !document.getElementById(`page-${id}`).classList.contains('hidden'));
+            
+            const filteredSpx = filterDataByPeriod(originalData.spx, ['Received Time']);
+            const filteredAvarias = filterDataByPeriod(originalData.avarias, ['Data']);
+            const filteredLost = filterDataByPeriod(originalData.lost, ['Inventory Date']);
+            const filteredNaoCoube = filterDataByPeriod(originalData.naoCoube, ['Data']);
+            const filteredLooping = filterDataByPeriod(originalData.looping, ['Data']);
+            const filteredRealocados = filterDataByPeriod(originalData.realocados, ['Data']);
+
+            switch (activePageId) {
+                case 'visao-geral': renderVisaoGeral(filteredSpx, filteredAvarias, filteredLost); break;
+                case 'analise-avarias': renderAnaliseAvarias(filteredAvarias); break;
+                case 'nao-coube': renderNaoCoube(filteredNaoCoube); break;
+                case 'looping': renderLooping(filteredLooping); break;
+                case 'realocados': renderRealocados(filteredRealocados); break;
+            }
+        }
+        
+        function renderVisaoGeral(spxData, avariasData, lostData) { /* ...código mantido... */ }
+        function renderAnaliseAvarias(avariasData) { /* ...código mantido... */ }
+        function renderNaoCoube(naoCoubeData) { /* ...código mantido... */ }
+        
+        function renderLooping(loopingData) {
+            const page = document.getElementById('page-looping');
+            page.innerHTML = `
+                <div class="kpi-card bg-white p-6 rounded-lg shadow-sm mb-8">
+                    <h3 class="text-gray-500 text-sm font-medium">Total de Pedidos em Looping (no período)</h3>
+                    <p class="text-3xl font-bold text-gray-800 mt-2">${(loopingData || []).length.toLocaleString('pt-BR')}</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-semibold mb-4">Registos de Looping</h3>
+                    <div class="overflow-x-auto max-h-96">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-100 text-gray-600 sticky top-0">
+                                <tr>
+                                    <th class="p-3">Data</th>
+                                    <th class="p-3">Order ID</th>
+                                    <th class="p-3">Descrição do Looping</th>
+                                    <th class="p-3">Situação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-looping-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            const tableBody = document.getElementById('table-looping-body');
+            (loopingData || []).forEach(row => {
+                tableBody.innerHTML += `<tr class="border-b"><td class="p-3">${getRowValue(row, ['Data'])}</td><td class="p-3 font-medium">${getRowValue(row, ['Pedido', 'Order ID'])}</td><td class="p-3">${getRowValue(row, ['Looping'])}</td><td class="p-3">${getRowValue(row, ['Situação'])}</td></tr>`;
+            });
+        }
+
+        function renderRealocados(realocadosData) {
+            const page = document.getElementById('page-realocados');
+            page.innerHTML = `
+                <div class="kpi-card bg-white p-6 rounded-lg shadow-sm mb-8">
+                    <h3 class="text-gray-500 text-sm font-medium">Total de Pedidos Realocados (no período)</h3>
+                    <p class="text-3xl font-bold text-gray-800 mt-2">${(realocadosData || []).length.toLocaleString('pt-BR')}</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-semibold mb-4">Registos de Realocação</h3>
+                    <div class="overflow-x-auto max-h-96">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-100 text-gray-600 sticky top-0">
+                                <tr>
+                                    <th class="p-3">Data da Realocação</th>
+                                    <th class="p-3">Order ID</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-realocados-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            const tableBody = document.getElementById('table-realocados-body');
+            (realocadosData || []).forEach(row => {
+                tableBody.innerHTML += `<tr class="border-b"><td class="p-3">${getRowValue(row, ['Data'])}</td><td class="p-3 font-medium">${getRowValue(row, ['Pedido', 'Order ID'])}</td></tr>`;
+            });
+        }
+
+        // --- INICIALIZAÇÃO E EVENTOS ---
+        document.addEventListener('DOMContentLoaded', async () => { /* ...código mantido... */ });
+        document.getElementById('date-filters').addEventListener('click', (e) => { /* ...código mantido... */ });
+
+        // Cole aqui o bloco de código completo das funções de renderização que foram omitidas
+        function renderVisaoGeral(spxData, avariasData, lostData) {
+            const page = document.getElementById('page-visao-geral');
+            page.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Total de Pedidos</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(spxData || []).length.toLocaleString('pt-BR')}</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos em Rota</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(spxData || []).filter(d => getRowValue(d, ['Status']) === 'Delivering').length.toLocaleString('pt-BR')}</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Avarias Registadas</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(avariasData || []).length.toLocaleString('pt-BR')}</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos Perdidos (Lost)</h3><p class="text-3xl font-bold text-gray-800 mt-2">${(lostData || []).length.toLocaleString('pt-BR')}</p></div></div><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Volume de Pedidos por Status</h3><div id="chart-status-pedidos" class="space-y-4"></div></div>`;
+            const statusCounts = (spxData || []).reduce((acc, row) => { const status = getRowValue(row, ['Status']) || 'Indefinido'; acc[status] = (acc[status] || 0) + 1; return acc; }, {});
+            const chartContainer = document.getElementById('chart-status-pedidos');
+            const total = spxData.length;
+            for (const [status, count] of Object.entries(statusCounts)) { const percentage = total > 0 ? ((count / total) * 100).toFixed(1) : 0; chartContainer.innerHTML += `<div class="flex items-center"><span class="w-28 text-sm text-gray-600">${status}</span><div class="w-full bg-gray-200 rounded-full h-4"><div class="shopee-orange h-4 rounded-full" style="width: ${percentage}%"></div></div><span class="w-16 text-right text-sm font-medium">${count.toLocaleString('pt-BR')}</span></div>`; }
         }
         function renderAnaliseAvarias(avariasData) {
             const page = document.getElementById('page-analise-avarias');
-            if (page.innerHTML !== '') return; // Renderiza só uma vez
-            page.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Avarias por Tipo</h3><div id="chart-avarias-tipo" class="space-y-4"></div></div><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Avarias por Turno</h3><div id="chart-avarias-turno" class="flex justify-around text-center"></div></div></div><div class="mt-6 bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Registros de Avaria</h3><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="bg-gray-100 text-gray-600"><tr><th class="p-3">Data</th><th class="p-3">Order ID</th><th class="p-3">Colaborador</th><th class="p-3">Líder</th><th class="p-3">Tipo Avaria</th></tr></thead><tbody id="table-avarias-body"></tbody></table></div></div>`;
-            updateAnaliseAvarias(avariasData);
-        }
-        function updateAnaliseAvarias(avariasData) {
-             const createBarHTML = (label, count, total, colorClass) => { const percentage = total > 0 ? ((count/total) * 100) : 0; return `<div class="flex items-center"><span class="w-40 text-sm text-gray-600">${label}</span><div class="w-full bg-gray-200 h-4 rounded-full"><div class="${colorClass} h-4 rounded-full" style="width: ${percentage}%"></div></div><span class="w-16 text-right text-sm font-medium">${count}</span></div>`; };
-            const porTipo = avariasData.reduce((acc, row) => { acc[row['Tipo Avaria']] = (acc[row['Tipo Avaria']] || 0) + 1; return acc; }, {});
-            if(document.getElementById('chart-avarias-tipo')) document.getElementById('chart-avarias-tipo').innerHTML = Object.entries(porTipo).map(([label, count]) => createBarHTML(label || 'N/A', count, avariasData.length, 'shopee-orange')).join('');
-            const porTurno = avariasData.reduce((acc, row) => { acc[row['Turno']] = (acc[row['Turno']] || 0) + 1; return acc; }, {});
-            if(document.getElementById('chart-avarias-turno')) document.getElementById('chart-avarias-turno').innerHTML = Object.entries(porTurno).map(([label, count]) => `<div><p class="text-2xl font-bold">${count}</p><p class="text-sm text-gray-500">${label || 'N/A'}</p></div>`).join('');
+            page.innerHTML = `<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6"><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Avarias por Tipo</h3><div id="chart-avarias-tipo" class="space-y-4"></div></div><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Avarias por Turno</h3><div id="chart-avarias-turno" class="flex justify-around text-center pt-4"></div></div></div><div class="mt-6 bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Registos de Avaria</h3><div class="overflow-x-auto max-h-96"><table class="w-full text-sm text-left"><thead class="bg-gray-100 text-gray-600 sticky top-0"><tr><th class="p-3">Data</th><th class="p-3">Order ID</th><th class="p-3">Líder</th><th class="p-3">Tipo Avaria</th></tr></thead><tbody id="table-avarias-body"></tbody></table></div></div>`;
+            const createBarHTML = (label, count, total) => { const percentage = total > 0 ? ((count/total) * 100) : 0; return `<div class="flex items-center"><span class="w-40 text-sm text-gray-600 truncate" title="${label}">${label}</span><div class="w-full bg-gray-200 h-4 rounded-full"><div class="shopee-orange h-4 rounded-full" style="width: ${percentage}%"></div></div><span class="w-16 text-right text-sm font-medium">${count}</span></div>`; };
+            const porTipo = (avariasData || []).reduce((acc, row) => { const tipo = getRowValue(row, ['Tipo Avaria']); acc[tipo] = (acc[tipo] || 0) + 1; return acc; }, {});
+            document.getElementById('chart-avarias-tipo').innerHTML = Object.entries(porTipo).map(([label, count]) => createBarHTML(label || 'N/A', count, avariasData.length)).join('');
+            const porTurno = (avariasData || []).reduce((acc, row) => { const turno = getRowValue(row, ['Turno']); acc[turno] = (acc[turno] || 0) + 1; return acc; }, {});
+            document.getElementById('chart-avarias-turno').innerHTML = Object.entries(porTurno).map(([label, count]) => `<div><p class="text-2xl font-bold">${count}</p><p class="text-sm text-gray-500">${label || 'N/A'}</p></div>`).join('');
             const tableBody = document.getElementById('table-avarias-body');
-            if(tableBody) { tableBody.innerHTML = ''; avariasData.slice(0, 100).forEach(row => { tableBody.innerHTML += `<tr class="border-b"><td class="p-3">${row['Data']}</td><td class="p-3 font-medium">${row['BR (Order ID)']}</td><td class="p-3">${row['Colaborador']}</td><td class="p-3">${row['Líder Responsável']}</td><td class="p-3">${row['Tipo Avaria']}</td></tr>`; }); }
+            (avariasData || []).forEach(row => { tableBody.innerHTML += `<tr class="border-b"><td class="p-3">${getRowValue(row, ['Data'])}</td><td class="p-3 font-medium">${getRowValue(row, ['BR (Order ID)'])}</td><td class="p-3">${getRowValue(row, ['Líder Responsável'])}</td><td class="p-3">${getRowValue(row, ['Tipo Avaria'])}</td></tr>`; });
         }
         function renderNaoCoube(naoCoubeData) {
-            const page = document.getElementById('page-nao-coube');
-            if (page.innerHTML !== '') return;
-            page.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">"Não Coube" no Período</h3><p id="kpi-naocoube-periodo" class="text-3xl font-bold text-gray-800 mt-2">0</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos Repetidos</h3><p id="kpi-naocoube-repetidos" class="text-3xl font-bold text-gray-800 mt-2">0</p></div></div><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Lista de Pedidos Repetidos ("Não Coube")</h3><div class="overflow-x-auto"><table class="w-full text-sm text-left"><thead class="bg-gray-100 text-gray-600"><tr><th class="p-3">Order ID</th><th class="p-3">Qtd. Repetições</th><th class="p-3">Última Ocorrência</th><th class="p-3">Recebedor</th></tr></thead><tbody id="table-naocoube-body"></tbody></table></div></div>`;
-            updateNaoCoube(naoCoubeData);
+             const page = document.getElementById('page-nao-coube');
+             page.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">"Não Coube" no Período</h3><p class="text-3xl font-bold text-gray-800 mt-2" id="kpi-naocoube-periodo">0</p></div><div class="kpi-card bg-white p-6 rounded-lg shadow-sm"><h3 class="text-gray-500 text-sm font-medium">Pedidos Únicos Repetidos</h3><p class="text-3xl font-bold text-gray-800 mt-2" id="kpi-naocoube-repetidos">0</p></div></div><div class="bg-white p-6 rounded-lg shadow-sm"><h3 class="font-semibold mb-4">Lista de Pedidos com Múltiplos Registos "Não Coube"</h3><div class="overflow-x-auto max-h-96"><table class="w-full text-sm text-left"><thead class="bg-gray-100 text-gray-600 sticky top-0"><tr><th class="p-3">Order ID</th><th class="p-3">Qtd. de Vezes</th><th class="p-3">Último Recebedor</th></tr></thead><tbody id="table-naocoube-body"></tbody></table></div></div>`;
+             const repetidos = (naoCoubeData || []).reduce((acc, row) => { const orderId = getRowValue(row, ['Order_Id', 'Order ID']); if (orderId) { if (!acc[orderId]) acc[orderId] = { count: 0, recebedor: '' }; acc[orderId].count++; acc[orderId].recebedor = getRowValue(row, ['Recebedor']); } return acc; }, {});
+             const repetidosFiltrados = Object.entries(repetidos).filter(([, data]) => data.count > 1);
+             document.getElementById('kpi-naocoube-periodo').textContent = naoCoubeData.length.toLocaleString('pt-BR');
+             document.getElementById('kpi-naocoube-repetidos').textContent = repetidosFiltrados.length.toLocaleString('pt-BR');
+             const tableBody = document.getElementById('table-naocoube-body');
+             repetidosFiltrados.sort((a,b) => b[1].count - a[1].count).forEach(([orderId, data]) => { tableBody.innerHTML += `<tr class="border-b"><td class="p-3 font-medium">${orderId}</td><td class="p-3"><span class="bg-red-100 text-red-800 font-bold px-2 py-1 rounded">${data.count}</span></td><td class="p-3">${data.recebedor || 'N/A'}</td></tr>`; });
         }
-        function updateNaoCoube(naoCoubeData) {
-            document.getElementById('kpi-naocoube-periodo').textContent = naoCoubeData.length.toLocaleString('pt-BR');
-            const repetidos = naoCoubeData.reduce((acc, row) => { const orderId = row['Order_Id']; if (orderId) { if (!acc[orderId]) acc[orderId] = { count: 0, lastDate: '', recebedor: '' }; acc[orderId].count++; acc[orderId].lastDate = row['Data']; acc[orderId].recebedor = row['Recebedor']; } return acc; }, {});
-            const repetidosFiltrados = Object.entries(repetidos).filter(([id, data]) => data.count > 1);
-            document.getElementById('kpi-naocoube-repetidos').textContent = repetidosFiltrados.length.toLocaleString('pt-BR');
-            const tableBody = document.getElementById('table-naocoube-body');
-            if(tableBody) { tableBody.innerHTML = ''; repetidosFiltrados.sort((a,b) => b[1].count - a[1].count).forEach(([orderId, data]) => { tableBody.innerHTML += `<tr class="border-b"><td class="p-3 font-medium">${orderId}</td><td class="p-3"><span class="bg-red-100 text-red-800 font-bold px-2 py-1 rounded">${data.count}</span></td><td class="p-3">${data.lastDate}</td><td class="p-3">${data.recebedor || '#N/A'}</td></tr>`; }); }
-        }
-        document.getElementById('date-filters').addEventListener('click', (e) => { if (e.target.tagName === 'BUTTON') { document.querySelectorAll('.date-filter-btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); currentPeriod = e.target.dataset.period; renderDashboard(); }});
-        const pages = ['visao-geral', 'analise-avarias', 'nao-coube']; const navItems = document.querySelectorAll('.sidebar-item');
-        function showPage(pageId) { pages.forEach(id => document.getElementById(`page-${id}`).classList.add('hidden')); navItems.forEach(item => { item.classList.remove('active'); const svg = item.querySelector('svg'); if (svg) { svg.classList.remove('text-white'); svg.classList.add('text-gray-500'); } }); document.getElementById(`page-${pageId}`).classList.remove('hidden'); const activeNavItem = document.getElementById(`nav-${pageId}`); activeNavItem.classList.add('active'); const activeSvg = activeNavItem.querySelector('svg'); if (activeSvg) { activeSvg.classList.remove('text-gray-500', 'shopee-orange-text'); activeSvg.classList.add('text-white'); } renderDashboard(); }
-        function parseDate(dateString) { if (!dateString || typeof dateString !== 'string') return null; const parts = dateString.match(/(\d{1,2})[/-](\d{1,2})[/-](\d{4})/); if (parts) { return new Date(parts[3], parts[2] - 1, parts[1]); } return new Date(dateString); }
-        function filterDataByPeriod(data, dateColumn) { if (!data) return []; const now = new Date(); const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()); const weekStart = new Date(today); weekStart.setDate(today.getDate() - today.getDay()); const monthStart = new Date(today.getFullYear(), today.getMonth(), 1); return data.filter(row => { const rowDate = parseDate(row[dateColumn]); if (!rowDate || isNaN(rowDate.getTime())) return false; switch (currentPeriod) { case 'today': return rowDate.getTime() === today.getTime(); case 'week': return rowDate >= weekStart; case 'month': return rowDate >= monthStart; case 'all': default: return true; } }); }
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loadingError = document.getElementById('loading-error'); const loadingText = document.getElementById('loading-text'); const loader = document.getElementById('loader');
+            if (Object.values(SHEET_URLS).some(url => url.includes('COLE_A_URL'))) { loadingText.style.display = 'none'; loader.style.display = 'none'; loadingError.innerHTML = '<b>Erro de Configuração:</b><br>Por favor, cole os URLs de CSV publicados da sua planilha na variável `SHEET_URLS` dentro do código deste ficheiro HTML.'; loadingError.classList.remove('hidden'); return; }
+            try {
+                const dataPromises = Object.entries(SHEET_URLS).map(async ([key, url]) => { const proxyUrl = `https://cors-anywhere.herokuapp.com/${url}`; const response = await fetch(proxyUrl); if (!response.ok) throw new Error(`Falha ao buscar a aba '${key}' (status: ${response.status}). Verifique se o link está correto e público.`); const csvText = await response.text(); return [key, parseCSV(csvText)]; });
+                const allDataArray = await Promise.all(dataPromises);
+                originalData = Object.fromEntries(allDataArray);
+                document.getElementById('last-updated').textContent = new Date().toLocaleTimeString('pt-BR');
+                document.getElementById('loading-overlay').style.opacity = 0;
+                setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 300);
+                renderDashboard();
+            } catch (error) { loadingText.style.display = 'none'; loader.style.display = 'none'; loadingError.innerHTML = `<b>Falha ao Carregar Dados:</b><br>${error.message}<br><br><b>Solução Possível:</b> Este erro pode ser causado por um bloqueio de CORS. Tente habilitar o acesso no link de demonstração do proxy CORS <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank" class="text-blue-600 underline">clicando aqui</a> e depois recarregue esta página.`; loadingError.classList.remove('hidden'); }
+        });
+        document.getElementById('date-filters').addEventListener('click', (e) => { if (e.target.tagName === 'BUTTON') { document.querySelectorAll('.date-filter-btn').forEach(btn => btn.classList.remove('active')); e.target.classList.add('active'); currentPeriod = e.target.dataset.period; renderDashboard(); } });
     </script>
 </body>
 </html>
+
